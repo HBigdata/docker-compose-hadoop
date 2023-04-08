@@ -1,0 +1,202 @@
+version: '3'
+services:
+  hadoop-hdfs-nn:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-hdfs-nn
+    hostname: hadoop-hdfs-nn
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "30070:${HADOOP_HDFS_NN_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-hdfs-nn"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:${HADOOP_HDFS_NN_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-hdfs-dn-0:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-hdfs-dn-0
+    hostname: hadoop-hdfs-dn-0
+    restart: always
+    depends_on:
+      - hadoop-hdfs-nn
+    env_file:
+      - .env
+    ports:
+      - "30864:${HADOOP_HDFS_DN_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-hdfs-dn hadoop-hdfs-nn ${HADOOP_HDFS_NN_PORT}"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:${HADOOP_HDFS_DN_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-hdfs-dn-1:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-hdfs-dn-1
+    hostname: hadoop-hdfs-dn-1
+    restart: always
+    depends_on:
+      - hadoop-hdfs-nn
+    env_file:
+      - .env
+    ports:
+      - "30865:${HADOOP_HDFS_DN_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-hdfs-dn hadoop-hdfs-nn ${HADOOP_HDFS_NN_PORT}"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:${HADOOP_HDFS_DN_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-hdfs-dn-2:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-hdfs-dn-2
+    hostname: hadoop-hdfs-dn-2
+    restart: always
+    depends_on:
+      - hadoop-hdfs-nn
+    env_file:
+      - .env
+    ports:
+      - "30866:${HADOOP_HDFS_DN_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-hdfs-dn hadoop-hdfs-nn ${HADOOP_HDFS_NN_PORT}"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:${HADOOP_HDFS_DN_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-yarn-rm:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-yarn-rm
+    hostname: hadoop-yarn-rm
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "30888:${HADOOP_YARN_RM_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-yarn-rm"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -tnlp|grep :${HADOOP_YARN_RM_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-yarn-nm-0:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-yarn-nm-0
+    hostname: hadoop-yarn-nm-0
+    restart: always
+    depends_on:
+      - hadoop-yarn-rm
+    env_file:
+      - .env
+    ports:
+      - "30042:${HADOOP_YARN_NM_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-yarn-nm hadoop-yarn-rm ${HADOOP_YARN_RM_PORT}"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:${HADOOP_YARN_NM_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-yarn-nm-1:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-yarn-nm-1
+    hostname: hadoop-yarn-nm-1
+    restart: always
+    depends_on:
+      - hadoop-yarn-rm
+    env_file:
+      - .env
+    ports:
+      - "30043:${HADOOP_YARN_NM_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-yarn-nm hadoop-yarn-rm ${HADOOP_YARN_RM_PORT}"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:${HADOOP_YARN_NM_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-yarn-nm-2:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-yarn-nm-2
+    hostname: hadoop-yarn-nm-2
+    restart: always
+    depends_on:
+      - hadoop-yarn-rm
+    env_file:
+      - .env
+    ports:
+      - "30044:${HADOOP_YARN_NM_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-yarn-nm hadoop-yarn-rm ${HADOOP_YARN_RM_PORT}"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:${HADOOP_YARN_NM_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-yarn-proxyserver:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-yarn-proxyserver
+    hostname: hadoop-yarn-proxyserver
+    restart: always
+    depends_on:
+      - hadoop-yarn-rm
+    env_file:
+      - .env
+    ports:
+      - "30911:${HADOOP_YARN_PROXYSERVER_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-yarn-proxyserver hadoop-yarn-rm ${HADOOP_YARN_RM_PORT}"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -tnlp|grep :${HADOOP_YARN_PROXYSERVER_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+  hadoop-mr-historyserver:
+    image: registry.cn-hangzhou.aliyuncs.com/bigdata_cloudnative/hadoop:v1
+    user: "hadoop:hadoop"
+    container_name: hadoop-mr-historyserver
+    hostname: hadoop-mr-historyserver
+    restart: always
+    depends_on:
+      - hadoop-yarn-rm
+    env_file:
+      - .env
+    ports:
+      - "31988:${HADOOP_MR_HISTORYSERVER_PORT}"
+    command: ["sh","-c","/opt/apache/bootstrap.sh hadoop-mr-historyserver hadoop-yarn-rm ${HADOOP_YARN_RM_PORT}"]
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD-SHELL", "netstat -tnlp|grep :${HADOOP_MR_HISTORYSERVER_PORT} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  hadoop_network:
+    driver: bridge
